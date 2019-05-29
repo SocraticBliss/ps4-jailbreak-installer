@@ -135,9 +135,8 @@ uint64_t get_kbase() {
 }
 
 void install_syscall(uint32_t n, void *func) {
-	uint8_t *kbase = (uint8_t *)get_kbase();
-
-	KDATA(0x107C610, sysents, struct sysent);
+    uint8_t *kbase = (uint8_t *)get_kbase();
+    KDATA(0x107C610, sysents, struct sysent);
 	
     struct sysent *p = &sysents[n];
     memset(p, NULL, sizeof(struct sysent));
