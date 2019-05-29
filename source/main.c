@@ -1,5 +1,10 @@
 #include "ps4.h"
+
+#define FW_505
+
 #include "fw_defines.h"
+
+
 
 #define X86_CR0_WP (1 << 16)
 
@@ -110,7 +115,7 @@ int callforhelp(struct thread *td, void *uap){
 #define TYPE_FIELD(field, offset) struct { TYPE_PAD(offset); field; }
 
 #define KSLIDE(offset) (void *)(kbase + offset);
-#define KDATA(slide, name, type) type* name;
+#define KDATA(slide, name, type) type* name = KSLIDE(slide);
 
 
 TYPE_BEGIN(struct sysent, 0x30);
@@ -217,10 +222,10 @@ int _main(struct thread *td)
 	initNetwork();
 	initPthread();
 	
-	int ver = get_fw_version();
+	/*int ver = get_fw_version();
 	if(ver == 505){
-		#define FW_505
-	}
+		
+	}*/
 	
 	syscall(11,kpayload,td);
 	

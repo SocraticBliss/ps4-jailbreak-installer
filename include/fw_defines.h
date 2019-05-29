@@ -2,7 +2,7 @@
 #define __FW_DEFINES_H__
 #pragma once
 
-#ifdef FW_350
+#if defined (FW_350)
 
 #define KERN_XFAST_SYSCALL	0x3A1AD0	
 #define KERN_PRISON_0		0xEF5A00
@@ -10,7 +10,7 @@
 #define KERN_PRINTF			0x1DF410
 #define KERN_COPYOUT		0x3B9220
 
-#elif FW_355
+#elif defined (FW_355)
 
 #define KERN_XFAST_SYSCALL	0x3A1F10	
 #define KERN_PRISON_0		0xEF5A00
@@ -19,7 +19,7 @@
 #define KERN_ROOTVNODE		0x1963040
 
 
-#elif FW_405
+#elif defined (FW_405)
 
 #define	KERN_XFAST_SYSCALL	0x30EB30	
 #define KERN_PRISON_0		0xF26010
@@ -27,7 +27,7 @@
 #define KERN_PRINTF			0x347580
 #define KERN_ROOTVNODE		0x206D250
 
-#elif FW_455
+#elif defined (FW_455)
 
 #define	KERN_XFAST_SYSCALL	0x3095D0	
 #define KERN_PRISON_0		0x10399B0
@@ -35,7 +35,7 @@
 #define KERN_COPYOUT		0x14A7B0
 #define KERN_ROOTVNODE		0x21AFA30
 
-#elif FW_474
+#elif defined (FW_474)
 
 #define	KERN_XFAST_SYSCALL	0x30B7D0	
 #define KERN_PRISON_0		0x1042AB0
@@ -43,7 +43,7 @@
 #define KERN_PRINTF			0x17F30
 #define KERN_ROOTVNODE		0x21B89E0
 
-#elif FW_500
+#elif defined (FW_500)
 
 #define	KERN_XFAST_SYSCALL	0x1C0     
 #define KERN_PRISON_0		0x10986A0
@@ -51,7 +51,7 @@
 #define KERN_PRINTF			0x435C70
 #define KERN_ROOTVNODE		0x22C19F0
 
-#elif FW_501
+#elif defined (FW_501)
 
 #define	KERN_XFAST_SYSCALL	0x1C0     
 #define KERN_PRISON_0		0x10986A0
@@ -59,7 +59,7 @@
 #define KERN_PRINTF			0x435C70
 #define KERN_ROOTVNODE		0x22C19F0
 
-#elif FW_505
+#elif defined (FW_505)
 
 #define	KERN_XFAST_SYSCALL	0x1C0     
 #define KERN_PRISON_0		0x10986A0
@@ -67,15 +67,6 @@
 #define KERN_PRINTF			0x436040
 #define KERN_COPYOUT		0x1EA630
 #define KERN_SYSENTS 		0x107C610
-
-#else
-	
-#define	KERN_XFAST_SYSCALL	0
-#define KERN_PRISON_0		0
-#define KERN_ROOTVNODE		0
-#define KERN_PRINTF			0
-#define KERN_COPYOUT		0
-#define KERN_SYSENTS 		0
 
 #endif
 
