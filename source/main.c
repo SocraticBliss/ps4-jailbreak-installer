@@ -4,9 +4,13 @@
 
 #include "fw_defines.h"
 
-
-
 #define X86_CR0_WP (1 << 16)
+
+
+uint64_t xfast;
+uint64_t prison0;
+uint64_t rootvnode;
+uint64_t sysent_off; 
 
 static inline __attribute__((always_inline)) uint64_t readCr0(void) {
 	uint64_t cr0;
@@ -132,13 +136,13 @@ TYPE_END();
 uint64_t get_kbase() {
     uint32_t edx, eax;
     __asm__ ("rdmsr" : "=d"(edx), "=a"(eax) : "c"(0xC0000082));
-    return ((((uint64_t)edx) << 32) | (uint64_t)eax) - KERN_XFAST_SYSCALL;
+    return ((((uint64_t)edx) << 32) | (uint64_t)eax) - xfast;
 }
 
 void install_syscall(uint32_t n, void *func) {
 	uint8_t *kbase = (uint8_t *)get_kbase();
 
-	KDATA(KERN_SYSENTS, sysents, struct sysent);
+	KDATA(sysent_off, sysents, struct sysent);
 	
     struct sysent *p = &sysents[n];
     memset(p, NULL, sizeof(struct sysent));
@@ -155,10 +159,10 @@ int kpayload(struct thread *td){
 	fd = td->td_proc->p_fd;
 	cred = td->td_proc->p_ucred;
 
-	void* kernel_base = &((uint8_t*)__readmsr(0xC0000082))[-KERN_XFAST_SYSCALL];
+	void* kernel_base = &((uint8_t*)__readmsr(0xC0000082))[-xfast];
 	uint8_t* kernel_ptr = (uint8_t*)kernel_base;
-	got_prison0 =   (void**)&kernel_ptr[KERN_PRISON_0];
-	got_rootvnode = (void**)&kernel_ptr[KERN_ROOTVNODE];
+	got_prison0 =   (void**)&kernel_ptr[prison0];
+	got_rootvnode = (void**)&kernel_ptr[rootvnode];
 
 	cred->cr_uid = 0;
 	cred->cr_ruid = 0;
@@ -214,6 +218,12 @@ int get_fw_version() {
 }
 // return: 505
 
+void notify(char *message)
+{
+	char buffer[512];
+	sprintf(buffer, "%s\n\n\n\n\n\n\n", message);
+	sceSysUtilSendSystemNotificationWithText(0x81, buffer);
+}
 
 int _main(struct thread *td)
 {
@@ -222,12 +232,65 @@ int _main(struct thread *td)
 	initNetwork();
 	initPthread();
 	
-	/*int ver = get_fw_version();
-	if(ver == 505){
-		
-	}*/
+	int ver = get_fw_version();
+	switch (ver) {
+		case 505:
+			xfast = KERN_505_XFAST_SYSCALL;
+			prison0 = KERN_505_PRISON_0;
+			rootvnode = KERN_505_ROOTVNODE;
+			sysent_off = KERN_505_SYSENTS;
+			break;
+		case 501:
+			xfast = KERN_501_XFAST_SYSCALL;
+			prison0 = KERN_501_PRISON_0;
+			rootvnode = KERN_501_ROOTVNODE;
+			sysent_off = KERN_501_SYSENTS;
+			break;
+		case 500:
+			xfast = KERN_500_XFAST_SYSCALL;
+			prison0 = KERN_500_PRISON_0;
+			rootvnode = KERN_500_ROOTVNODE;
+			sysent_off = KERN_500_SYSENTS;
+			break;
+		case 474:
+			xfast = KERN_474_XFAST_SYSCALL;
+			prison0 = KERN_474_PRISON_0;
+			rootvnode = KERN_474_ROOTVNODE;
+			sysent_off = KERN_474_SYSENTS;
+			break;
+		case 455:
+			xfast = KERN_455_XFAST_SYSCALL;
+			prison0 = KERN_455_PRISON_0;
+			rootvnode = KERN_455_ROOTVNODE;
+			sysent_off = KERN_455_SYSENTS;
+			break;
+		case 405:
+			xfast = KERN_405_XFAST_SYSCALL;
+			prison0 = KERN_405_PRISON_0;
+			rootvnode = KERN_405_ROOTVNODE;
+			sysent_off = KERN_405_SYSENTS;
+			break;
+		case 355:
+			xfast = KERN_355_XFAST_SYSCALL;
+			prison0 = KERN_355_PRISON_0;
+			rootvnode = KERN_355_ROOTVNODE;
+			sysent_off = KERN_355_SYSENTS;
+			break;
+		case 350:
+			xfast = KERN_350_XFAST_SYSCALL;
+			prison0 = KERN_350_PRISON_0;
+			rootvnode = KERN_350_ROOTVNODE;
+			sysent_off = KERN_350_SYSENTS;
+			break;
+		default:
+			break;
+	}
 	
 	syscall(11,kpayload,td);
+	
+	initSysUtil();
+	
+	notify("jailbreak syscall 112 installed\ndial 112 to jailbreak");
 	
 	return 0;
 }
