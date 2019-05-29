@@ -1,4 +1,5 @@
 #include "ps4.h"
+#include "fw_defines.h"
 
 #define X86_CR0_WP (1 << 16)
 
@@ -73,11 +74,6 @@ struct thread {
 void** got_prison0;
 void** got_rootvnode;
 
-#define	KERN_XFAST_SYSCALL	0x1C0		// 5.05
-#define KERN_PRISON_0		0x10986A0
-#define KERN_ROOTVNODE	0x22C1A70
-#define KERN_SYSENTS 0x107C610
-
 static inline __attribute__((always_inline))
 void* curthread(void)
 {
@@ -135,8 +131,9 @@ uint64_t get_kbase() {
 }
 
 void install_syscall(uint32_t n, void *func) {
-    uint8_t *kbase = (uint8_t *)get_kbase();
-    KDATA(0x107C610, sysents, struct sysent);
+	uint8_t *kbase = (uint8_t *)get_kbase();
+
+	KDATA(KERN_SYSENTS, sysents, struct sysent);
 	
     struct sysent *p = &sysents[n];
     memset(p, NULL, sizeof(struct sysent));
@@ -186,7 +183,7 @@ int kpayload(struct thread *td){
 	writeCr0(cr0 & ~X86_CR0_WP);
 	
 	// 112 is international help number :)
-        install_syscall(112, callforhelp);
+    install_syscall(112, callforhelp);
 	
 	// Restore write protection
 	writeCr0(cr0);
@@ -194,6 +191,23 @@ int kpayload(struct thread *td){
 	return 0;
 }
 
+int get_fw_version() {
+
+    uint64_t name = 0x400000001;
+    char kstring[128];
+    size_t kstring_len = 64;
+
+    sysctl(&name, 2, &kstring, &kstring_len, NULL, 0);
+    char* split = strtok(kstring, " ");
+    int split_len = strlen(split);
+
+    int major = strtol(split + split_len - 6, NULL, 10);
+    int minor = strtol(split + split_len - 3, NULL, 10);
+
+    int firmw = major * 100 + minor / 10;
+    return firmw;
+}
+// return: 505
 
 
 int _main(struct thread *td)
@@ -203,9 +217,12 @@ int _main(struct thread *td)
 	initNetwork();
 	initPthread();
 	
+	int ver = get_fw_version();
+	if(ver == 505){
+		#define FW_505
+	}
+	
 	syscall(11,kpayload,td);
-	
-	
 	
 	return 0;
 }
