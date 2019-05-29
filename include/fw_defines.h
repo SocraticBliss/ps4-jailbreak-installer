@@ -2,14 +2,14 @@
 #define __FW_DEFINES_H__
 #pragma once
 
-#define KERN_350_XFAST_SYSCALL	  0x3A1AD0	
+#define KERN_350_XFAST_SYSCALL    0x3A1AD0	
 #define KERN_350_PRISON_0		      0xEF5A00
-#define KERN_350_ROOTVNODE		    0x1963000
+#define KERN_350_ROOTVNODE        0x1963000
 #define KERN_350_PRINTF			      0x1DF410
 #define KERN_350_COPYOUT		      0x3B9220
 #define KERN_350_SYSENTS 		      0x0
 
-#define KERN_355_XFAST_SYSCALL	  0x3A1F10	
+#define KERN_355_XFAST_SYSCALL    0x3A1F10	
 #define KERN_355_PRISON_0		      0xEF5A00
 #define KERN_355_COPYOUT		      0x3B9660
 #define KERN_355_PRINTF			      0x1DF550
